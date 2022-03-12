@@ -57,7 +57,8 @@ int main() {
         for (std::size_t i = 0; i < shapes.silhouette.size() + 1; i++) {
             std::size_t j = i % shapes.silhouette.size();
             silhouette[i].position = sf::Vector2f(shapes.silhouette[j].x * 28, shapes.silhouette[j].y * 28);
-            // silhouette[i].color = sf::Color::Red;
+            // default draw colour appears to be white anyway...
+            // silhouette[i].color = sf::Color::White;
         }
         window.draw(silhouette);
 
