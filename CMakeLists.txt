@@ -135,8 +135,30 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/Mo
 # a better way to load dependencies
 include(CPM)
 
+# find SFML
+# set(SFML_STATIC_LIBRARIES TRUE)
+CPMFindPackage(
+    NAME SFML
+    GIT_REPOSITORY https://github.com/SFML/SFML.git
+    GIT_TAG        2.5.1
+    EXCLUDE_FROM_ALL YES
+    OPTIONS "BUILD_SHARED_LIBS FALSE" # force SFML to build as static lib for ease of distribution
+)
+
 # library
 add_subdirectory(triangberg_builder)
+
+# TODO: consider setting up installation of executable program
+add_executable(triangberg triangberg.cpp)
+# inherit common project compiler options
+target_link_libraries(
+    triangberg
+        PRIVATE
+            $<BUILD_INTERFACE:triangberg-compiler-options>
+)
+# link with builder library and SFML
+target_link_libraries(triangberg PRIVATE triangberg_builder sfml-graphics)
+
 # unit tests --only enable if requested AND we're not building as a sub-project
 if(ENABLE_TESTS AND NOT TRIANGBERG_SUBPROJECT)
     message(STATUS "[triangberg] Unit Tests Enabled")
