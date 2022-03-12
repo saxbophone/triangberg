@@ -95,7 +95,7 @@ if (MSVC) # MSVC supports different warning options to GCC/Clang
     # if tests are enabled, enable converting all warnings to errors too
     if (ENABLE_TESTS)
         # add_compile_options(/WX)
-        enable_cxx_compiler_flag_if_supported("/WX")
+        # enable_cxx_compiler_flag_if_supported("/WX")
     endif()
 else() # GCC/Clang warning option
     # NOTE: GCC and Clang support most of the same options, but neither supports all
@@ -115,7 +115,7 @@ else() # GCC/Clang warning option
     enable_cxx_compiler_flag_if_supported("-Wdocumentation")
     # if tests are enabled, enable converting all warnings to errors too
     if (ENABLE_TESTS)
-        enable_cxx_compiler_flag_if_supported("-Werror")
+        # enable_cxx_compiler_flag_if_supported("-Werror")
         # exclude the following kinds of warnings from being converted into errors
         # unknown-pragma is useful to have as a warning but not as an error, if you have
         # pragmas which are for the consumption of one compiler only
@@ -135,8 +135,30 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/Mo
 # a better way to load dependencies
 include(CPM)
 
+# find SFML
+# set(SFML_STATIC_LIBRARIES TRUE)
+CPMFindPackage(
+    NAME SFML
+    GIT_REPOSITORY https://github.com/SFML/SFML.git
+    GIT_TAG        2.5.1
+    EXCLUDE_FROM_ALL YES
+    OPTIONS "BUILD_SHARED_LIBS FALSE" # force SFML to build as static lib for ease of distribution
+)
+
 # library
 add_subdirectory(triangberg_builder)
+
+# TODO: consider setting up installation of executable program
+add_executable(triangberg triangberg.cpp)
+# inherit common project compiler options
+target_link_libraries(
+    triangberg
+        PRIVATE
+            $<BUILD_INTERFACE:triangberg-compiler-options>
+)
+# link with builder library and SFML
+target_link_libraries(triangberg PRIVATE triangberg_builder sfml-graphics)
+
 # unit tests --only enable if requested AND we're not building as a sub-project
 if(ENABLE_TESTS AND NOT TRIANGBERG_SUBPROJECT)
     message(STATUS "[triangberg] Unit Tests Enabled")
