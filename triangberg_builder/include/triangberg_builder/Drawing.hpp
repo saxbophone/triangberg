@@ -20,6 +20,7 @@
 #include <cstddef>
 
 #include <functional>
+#include <vector>
 
 #include <triangberg_builder/types.hpp>
 
@@ -97,6 +98,11 @@ namespace com::saxbophone::triangberg {
          * this Drawing.
          */
         Shapes get_shapes() const;
+
+    private:
+        // XXX: for stub implementation to test drawing:
+        // tracks what demo stage the drawing is up to
+        std::size_t _stage;
     };
 }
 

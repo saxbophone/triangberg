@@ -4,6 +4,7 @@ target_sources(
         PRIVATE
             Private.cpp
             Public.cpp
+            Drawing.cpp
 )
 # sub-namespace source directories
 # NOTE: none yet!
