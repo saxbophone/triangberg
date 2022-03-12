@@ -2,6 +2,11 @@
 
 #include <triangberg_builder/Drawing.hpp>
 
+// fudge factor, for scaling up graphics. Will do for demos for now.
+// TODO: replace with automatic scaling of image to-screen size based on drawing
+// size.
+const std::size_t SCALE = 28;
+
 int main() {
     using namespace com::saxbophone::triangberg;
     // create the Drawing object
@@ -41,9 +46,9 @@ int main() {
             sf::VertexArray triangle(sf::Triangles, 3);
 
             // define the position of the triangle's points
-            triangle[0].position = sf::Vector2f(t.a.x * 28, t.a.y * 28);
-            triangle[1].position = sf::Vector2f(t.b.x * 28, t.b.y * 28);
-            triangle[2].position = sf::Vector2f(t.c.x * 28, t.c.y * 28);
+            triangle[0].position = sf::Vector2f(t.a.x * SCALE, t.a.y * SCALE);
+            triangle[1].position = sf::Vector2f(t.b.x * SCALE, t.b.y * SCALE);
+            triangle[2].position = sf::Vector2f(t.c.x * SCALE, t.c.y * SCALE);
 
             // define the color of the triangle's points
             triangle[0].color = sf::Color::Red;
@@ -56,7 +61,7 @@ int main() {
         sf::VertexArray silhouette(sf::LinesStrip, shapes.silhouette.size() + 1);
         for (std::size_t i = 0; i < shapes.silhouette.size() + 1; i++) {
             std::size_t j = i % shapes.silhouette.size();
-            silhouette[i].position = sf::Vector2f(shapes.silhouette[j].x * 28, shapes.silhouette[j].y * 28);
+            silhouette[i].position = sf::Vector2f(shapes.silhouette[j].x * SCALE, shapes.silhouette[j].y * SCALE);
             // default draw colour appears to be white anyway...
             // silhouette[i].color = sf::Color::White;
         }
