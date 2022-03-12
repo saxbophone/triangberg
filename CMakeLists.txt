@@ -95,7 +95,7 @@ if (MSVC) # MSVC supports different warning options to GCC/Clang
     # if tests are enabled, enable converting all warnings to errors too
     if (ENABLE_TESTS)
         # add_compile_options(/WX)
-        enable_cxx_compiler_flag_if_supported("/WX")
+        # enable_cxx_compiler_flag_if_supported("/WX")
     endif()
 else() # GCC/Clang warning option
     # NOTE: GCC and Clang support most of the same options, but neither supports all
