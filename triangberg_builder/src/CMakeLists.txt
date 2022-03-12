@@ -1,6 +1,6 @@
 # top-level namespace source files
 target_sources(
-    triangberg
+    triangberg_builder
         PRIVATE
             Private.cpp
             Public.cpp

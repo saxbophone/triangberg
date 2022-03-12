@@ -136,7 +136,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/Mo
 include(CPM)
 
 # library
-add_subdirectory(triangberg)
+add_subdirectory(triangberg_builder)
 # unit tests --only enable if requested AND we're not building as a sub-project
 if(ENABLE_TESTS AND NOT TRIANGBERG_SUBPROJECT)
     message(STATUS "[triangberg] Unit Tests Enabled")

@@ -4,7 +4,7 @@
  * <Copyright information goes here>
  */
 
-#include <triangberg/Public.hpp>
+#include <triangberg_builder/Public.hpp>
 
 #include "Private.hpp"
 

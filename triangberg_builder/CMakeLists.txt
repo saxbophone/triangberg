@@ -1,20 +1,20 @@
 include(GNUInstallDirs)
 
-add_library(triangberg STATIC)
+add_library(triangberg_builder STATIC)
 # ALIAS target to export a namespaced target even when building in-tree
-add_library(Triangberg::triangberg ALIAS triangberg)
+add_library(Triangberg::triangberg_builder ALIAS triangberg_builder)
 # add source files
 add_subdirectory(src)
 # library public header files location
 target_include_directories(
-    triangberg PUBLIC
+    triangberg_builder PUBLIC
     # different include directory path depending on if using the local or installed version of library
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
 # pass in version of project as preprocessor definitions
 target_compile_definitions(
-    triangberg PRIVATE
+    triangberg_builder PRIVATE
     -DTRIANGBERG_VERSION_MAJOR=${PROJECT_VERSION_MAJOR}
     -DTRIANGBERG_VERSION_MINOR=${PROJECT_VERSION_MINOR}
     -DTRIANGBERG_VERSION_PATCH=${PROJECT_VERSION_PATCH}
@@ -22,19 +22,19 @@ target_compile_definitions(
 )
 # set up version and soversion for the main library object
 set_target_properties(
-    triangberg PROPERTIES
+    triangberg_builder PROPERTIES
     VERSION ${TRIANGBERG_VERSION_STRING}
     SOVERSION ${PROJECT_VERSION_MAJOR}
     INTERFACE_Triangberg_MAJOR_VERSION ${PROJECT_VERSION_MAJOR}
     INTERFACE_Triangberg_MINOR_VERSION ${PROJECT_VERSION_MINOR}
 )
 set_property(
-    TARGET triangberg
+    TARGET triangberg_builder
     APPEND PROPERTY COMPATIBLE_INTERFACE_STRING "${Triangberg_MAJOR_VERSION}.${Triangberg_MINOR_VERSION}"
 )
 # inherit common project compiler options
 target_link_libraries(
-    triangberg
+    triangberg_builder
         PRIVATE
             $<BUILD_INTERFACE:triangberg-compiler-options>
 )
@@ -43,7 +43,7 @@ target_link_libraries(
 if (NOT TRIANGBERG_SUBPROJECT)
     # library
     install(
-        TARGETS triangberg
+        TARGETS triangberg_builder
         EXPORT TriangbergTargets
         # when a static library
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}

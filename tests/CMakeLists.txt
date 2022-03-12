@@ -11,7 +11,7 @@ target_link_libraries(
     tests
     PRIVATE
         triangberg-compiler-options  # tests use same compiler options as main project
-        triangberg
+        triangberg_builder
         Catch2::Catch2  # unit testing framework
 )
 
