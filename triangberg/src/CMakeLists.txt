@@ -1,6 +1,6 @@
 # top-level namespace source files
 target_sources(
-    my-hovercraft-is-full-of-eels
+    triangberg
         PRIVATE
             Private.cpp
             Public.cpp
