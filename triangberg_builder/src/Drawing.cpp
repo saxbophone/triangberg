@@ -28,8 +28,14 @@ namespace {
 }
 
 namespace com::saxbophone::triangberg {
+    class Drawing::Builder {};
+
     Drawing::Drawing(Point, Unit, Degrees, EdgeID, Percentage, Degrees)
-      : _stage(0) {}
+      : _stage(0)
+      , _builder(new Builder())
+      {}
+
+    Drawing::~Drawing() = default;
 
     bool Drawing::is_complete() const {
         return this->_stage == 6;

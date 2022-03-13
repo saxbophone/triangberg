@@ -20,6 +20,7 @@
 #include <cstddef>
 
 #include <functional>
+#include <memory>
 #include <vector>
 
 #include <triangberg_builder/types.hpp>
@@ -73,6 +74,8 @@ namespace com::saxbophone::triangberg {
             Degrees branch_angle
         );
 
+        ~Drawing();
+
         /**
          * @returns whether this Drawing is complete (i.e. no more triangles
          * can be added to it)
@@ -103,6 +106,8 @@ namespace com::saxbophone::triangberg {
         // XXX: for stub implementation to test drawing:
         // tracks what demo stage the drawing is up to
         std::size_t _stage;
+        class Builder; // forward-declaration of helper class for implementation
+        std::unique_ptr<Builder> _builder;
     };
 }
 
