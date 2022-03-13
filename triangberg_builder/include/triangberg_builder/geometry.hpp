@@ -22,6 +22,8 @@
 #include <triangberg_builder/types.hpp>
 
 namespace com::saxbophone::triangberg {
+    // Lower-level geometry helpers
+
     /**
      * @param d angle given in Degrees
      * @returns angle converted to Radians
@@ -41,6 +43,21 @@ namespace com::saxbophone::triangberg {
      * @returns angle of Vector b using angle of Vector a as a reference point
      */
     Radians angle_between(Vector a, Vector b);
+
+    /**
+     * @brief Subtends a Point from that defined by origin+v about origin by
+     * theta.
+     * @details This is the equivalent to setting a compass at origin, spreading
+     * its arms to span the Vector v from origin, and rotating the compass about
+     * origin by theta to form a new Point
+     * @param origin Origin of the subtension
+     * @param v Vector from origin marking the ray that will rotate about origin
+     * @param theta Amount to rotate by (Radians)
+     * @returns The subtended Point
+     */
+    Point subtend_point_from_vector(Point origin, Vector v, Radians theta);
+
+    // Higher-level geometry helpers
 
     /**
      * @returns true if Lines a and b are intersecting
