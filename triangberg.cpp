@@ -42,13 +42,13 @@ int main() {
         // draw everything here...
         Drawing::Shapes shapes = drawing.get_shapes();
         // draw all the triangles first
-        for (const Drawing::Triangle& t : shapes.triangles) {
+        for (const Drawing::Shape& t : shapes.triangles) {
             sf::VertexArray triangle(sf::Triangles, 3);
 
             // define the position of the triangle's points
-            triangle[0].position = sf::Vector2f(t.a.x * SCALE, t.a.y * SCALE);
-            triangle[1].position = sf::Vector2f(t.b.x * SCALE, t.b.y * SCALE);
-            triangle[2].position = sf::Vector2f(t.c.x * SCALE, t.c.y * SCALE);
+            triangle[0].position = sf::Vector2f(t[0].x * SCALE, t[0].y * SCALE);
+            triangle[1].position = sf::Vector2f(t[1].x * SCALE, t[1].y * SCALE);
+            triangle[2].position = sf::Vector2f(t[2].x * SCALE, t[2].y * SCALE);
 
             // define the color of the triangle's points
             triangle[0].color = sf::Color::Red;

@@ -31,22 +31,15 @@ namespace com::saxbophone::triangberg {
      */
     class Drawing {
     public:
-        /**
-         * @brief Equilateral triangle object in 2D space
-         * @details Points a, b and c define the triangle's vertices in
-         * clockwise order
-         */
-        struct Triangle {
-            Point a, b, c;
-        };
+        typedef std::vector<Point> Shape;
 
         /**
          * @brief The shapes that make up the visual representation of this
          * Drawing
          */
         struct Shapes {
-            std::vector<Point> silhouette; // the outline of the entire drawing
-            std::vector<Triangle> triangles; // all the triangles in the drawing
+            Shape silhouette; // the outline of the entire drawing
+            std::vector<Shape> triangles; // all the triangles in the drawing
         };
 
         /**
