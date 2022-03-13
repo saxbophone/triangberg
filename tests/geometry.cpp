@@ -35,7 +35,7 @@ TEST_CASE("degrees_to_radians", "[geometry]") {
     CHECK(degrees_to_radians(std::get<0>(angles)) == Approx(std::get<1>(angles)));
 }
 
-TEST_CASE("radians_to_degrees", "[geometry]") {
+TEST_CASE("radians_to_degrees", "[geometry][.][unimplemented]") {
 }
 
 TEST_CASE("angle_between", "[geometry]") {
