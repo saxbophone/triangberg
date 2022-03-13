@@ -10,7 +10,7 @@ const std::size_t SCALE = 28;
 int main() {
     using namespace com::saxbophone::triangberg;
     // create the Drawing object
-    Drawing drawing({}, {}, {}, {}, {}, {});
+    Drawing drawing({400, 300}, 10, 0, 2, 0.5, 1);
 
     // create the window
     sf::RenderWindow window(sf::VideoMode(800, 600), "My window");
