@@ -5,6 +5,7 @@
  */
 
 #include <cmath>
+#include <cstddef>
 
 #include <vector>
 
@@ -63,11 +64,11 @@ namespace {
 }
 
 namespace com::saxbophone::triangberg {
-    Radians degrees_to_radians(Degrees d) { return {}; }
+    Radians degrees_to_radians(Degrees) { return {}; }
 
-    Degrees radians_to_degrees(Radians r) { return {}; }
+    Degrees radians_to_degrees(Radians) { return {}; }
 
-    Radians angle_between(Vector a, Vector b) { return {}; }
+    Radians angle_between(Vector, Vector) { return {}; }
 
     bool are_intersecting(Line a, Line b) {
         // test both if a intersects b and b intersects a
@@ -76,5 +77,28 @@ namespace com::saxbophone::triangberg {
         return lines_intersect(a, b) and lines_intersect(b, a);
     }
 
-    bool is_concave(std::vector<Point> points) { return {}; }
+    bool is_concave(std::vector<Point> points) {
+        bool sign = false;
+        for (std::size_t i = 0; i < points.size(); i++) {
+            Point start = points[i];
+            Point middle = points[(i + 1) % points.size()];
+            Point end = points[(i + 2) % points.size()];
+            // Calculating the angular normal from three points
+            // https://en.wikipedia.org/wiki/Cross_product#Computational_geometry
+            Unit angular_normal =
+                (middle.x - start.x) * (end.y - start.y) -
+                (middle.y - start.y) * (end.x - start.x);
+            // the sign determines whether it's a CW or ACW bearing
+            if (i == 0) {
+                // for first-run, set sign
+                sign = std::signbit(angular_normal);
+            } else {
+                // compare sign for consistency
+                if (std::signbit(angular_normal) != sign) {
+                    return true; // not all angles have same sign: shape is concave
+                }
+            }
+        }
+        return false; // all angles have same sign: shape is convex
+    }
 }

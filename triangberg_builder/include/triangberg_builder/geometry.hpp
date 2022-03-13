@@ -29,7 +29,7 @@ namespace com::saxbophone::triangberg {
     Radians degrees_to_radians(Degrees d);
 
     /**
-     * @param d angle given in Radians
+     * @param r angle given in Radians
      * @returns angle converted to Degrees
      * @warning Unimplemented
      */
