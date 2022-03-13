@@ -89,6 +89,7 @@ TEST_CASE("subtend_point_from_vector", "[geometry]") {
         table<Point, Vector, Radians, Point>(
             {
                 {{4, 9}, {-3, -6}, 1.570796327, {10, 6}}, // 90°
+                {{10, 6}, {2, -3}, -0.5846852994, {10.01196068, 2.39446856}}, // -33.5°
             }
         )
     );
