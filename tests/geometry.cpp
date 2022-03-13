@@ -117,6 +117,10 @@ TEST_CASE("are_intersecting", "[geometry]") {
     const Line J = {{ 8,  3}, {10,  5}};
     const Line K = {{ 8,  5}, {10,  3}};
     const Line M = {{15, 10}, {15,  1}};
+    const Line N = {{ 0,  0}, { 1,  0}};
+    const Line P = {{ 0,  0}, { 0,  1}};
+    const Line Q = {{ 8, 10}, {10, 12}};
+    const Line R = {{ 9, 11}, { 7, 13}};
 
     // using record = std::tuple<Line, Line, bool>;
 
@@ -139,6 +143,9 @@ TEST_CASE("are_intersecting", "[geometry]") {
                 {C, E, false},
                 {H, B, false},
                 {B, H, false},
+                {N, P, false},
+                {P, N, false},
+                {Q, R, false},
             }
         )
     );
