@@ -4,6 +4,8 @@
  * <Copyright information goes here>
  */
 
+// get M_PI
+#define _USE_MATH_DEFINES
 #include <cmath>
 #include <cstddef>
 
