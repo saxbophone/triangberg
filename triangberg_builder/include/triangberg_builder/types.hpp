@@ -20,7 +20,7 @@
 #include <cstddef>
 
 namespace com::saxbophone::triangberg {
-    typedef float Unit;
+    typedef double Unit;
 
     typedef Unit Degrees;
 

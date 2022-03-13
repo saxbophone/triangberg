@@ -68,7 +68,15 @@ namespace com::saxbophone::triangberg {
 
     Degrees radians_to_degrees(Radians r) { return {}; }
 
-    Radians angle_between(Vector a, Vector b) { return {}; }
+    Radians angle_between(Vector a, Vector b) {
+        // algorithm: https://stackoverflow.com/a/16544330/6177253
+        Unit dot_product = a.x * b.x + a.y * b.y;
+        Unit determinant = a.x * b.y - a.y * b.x;
+        Radians angle = std::atan2(determinant, dot_product);
+        // force the limit of 180° turns to always be positive
+        // this simplifies handling of parallel lines in the reverse direction
+        return angle == (Radians)-M_PI ? -angle : angle;
+    }
 
     bool are_intersecting(Line a, Line b) {
         // test both if a intersects b and b intersects a
