@@ -28,7 +28,7 @@ namespace {
 }
 
 namespace com::saxbophone::triangberg {
-    Drawing::Drawing(Point, Unit, Angle, EdgeID, Percentage, Angle)
+    Drawing::Drawing(Point, Unit, Degrees, EdgeID, Percentage, Degrees)
       : _stage(0) {}
 
     bool Drawing::is_complete() const {
