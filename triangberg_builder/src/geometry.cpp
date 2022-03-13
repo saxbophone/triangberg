@@ -82,6 +82,15 @@ namespace com::saxbophone::triangberg {
         return angle == (Radians)-M_PI ? -angle : angle;
     }
 
+    Point subtend_point_from_vector(Point origin, Vector v, Radians theta) {
+        // first we rotate v around the x/y origin as if it was at that location
+        rotate_point(v.x, v.y, theta);
+        // then we turn origin into a vector and add the rotated position to it
+        return Point {
+            origin.x + v.x, origin.y + v.y
+        };
+    }
+
     bool are_intersecting(Line a, Line b) {
         // test both if a intersects b and b intersects a
         // --this is needed because only comparing from one POV gets false positives
