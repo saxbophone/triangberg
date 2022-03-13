@@ -84,6 +84,26 @@ TEST_CASE("angle_between", "[geometry]") {
     );
 }
 
+TEST_CASE("subtend_point_from_vector", "[geometry]") {
+    auto params = GENERATE(
+        table<Point, Vector, Radians, Point>(
+            {
+                {{4, 9}, {-3, -6}, 1.570796327, {10, 6}}, // 90°
+            }
+        )
+    );
+
+    Point origin = std::get<0>(params);
+    Vector v = std::get<1>(params);
+    Radians theta = std::get<2>(params);
+    Point destination = std::get<3>(params);
+
+    Point result = subtend_point_from_vector(origin, v, theta);
+
+    CHECK(result.x == Approx(destination.x));
+    CHECK(result.y == Approx(destination.y));
+}
+
 TEST_CASE("are_intersecting", "[geometry]") {
     const Line A = {{ 2, 10}, { 9, 15}};
     const Line B = {{ 6, 14}, { 3,  9}};
