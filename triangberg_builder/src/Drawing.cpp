@@ -44,15 +44,16 @@ namespace {
     class Triangle {
     public:
         // ctor for initial triangle
-        Triangle(Point centre, Degrees orientation, Unit size) {}
+        Triangle(std::size_t id, Point centre, Degrees orientation, Unit size) {}
         // ctor for first triangle added (with vertex bound to a point on edge of first triangle)
-        Triangle(Point first_vertex, Vector first_edge) {}
+        Triangle(std::size_t id, Point first_vertex, Vector first_edge) {}
         // ctor used for all other triangles, whose vertices are shared with existing triangles
-        Triangle(std::shared_ptr<Vertex> first, std::shared_ptr<Vertex> second) {}
+        Triangle(std::size_t id, std::shared_ptr<Vertex> first, std::shared_ptr<Vertex> second) {}
         // returns the Shape of this Triangle
         Drawing::Shape get_shape() const;
 
     private:
+        std::size_t _id; // tracking identity explicitly is better than pointers
         std::array<std::shared_ptr<Vertex>, 3> _vertices;
     };
 }
