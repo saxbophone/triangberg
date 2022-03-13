@@ -76,5 +76,5 @@ namespace com::saxbophone::triangberg {
         return lines_intersect(a, b) and lines_intersect(b, a);
     }
 
-    bool is_convex(std::vector<Point> points) { return {}; }
+    bool is_concave(std::vector<Point> points) { return {}; }
 }
