@@ -6,7 +6,10 @@
 
 #include <cstddef>
 
+#include <array>
 #include <functional>
+#include <memory>
+#include <vector>
 
 #include <triangberg_builder/types.hpp>
 #include <triangberg_builder/Drawing.hpp>
@@ -25,6 +28,33 @@ namespace {
                 J = {14, 14},
                 K = { 1, 11},
                 M = { 6, 20};
+
+    class Triangle; // forward-declaration
+    class Vertex {
+    public:
+        Vertex(Point position) {}
+        // Vertex needs to know about every Triangle that uses it
+        void add_triangle(std::shared_ptr<Triangle> triangle) {}
+
+    private:
+        Point _position;
+        std::vector<std::weak_ptr<Triangle>> _triangles;
+    };
+
+    class Triangle {
+    public:
+        // ctor for initial triangle
+        Triangle(Point centre, Degrees orientation, Unit size) {}
+        // ctor for first triangle added (with vertex bound to a point on edge of first triangle)
+        Triangle(Point first_vertex, Vector first_edge) {}
+        // ctor used for all other triangles, whose vertices are shared with existing triangles
+        Triangle(std::shared_ptr<Vertex> first, std::shared_ptr<Vertex> second) {}
+        // returns the Shape of this Triangle
+        Drawing::Shape get_shape() const;
+
+    private:
+        std::array<std::shared_ptr<Vertex>, 3> _vertices;
+    };
 }
 
 namespace com::saxbophone::triangberg {
