@@ -20,9 +20,11 @@
 #include <cstddef>
 
 namespace com::saxbophone::triangberg {
-    typedef long double Unit;
+    typedef float Unit;
 
-    typedef Unit Angle;
+    typedef Unit Degrees;
+
+    typedef Unit Radians;
 
     typedef Unit Percentage;
 
@@ -32,6 +34,8 @@ namespace com::saxbophone::triangberg {
         Unit x;
         Unit y;
     };
+
+    typedef Point Vector;
 
     struct Line {
         Point origin;

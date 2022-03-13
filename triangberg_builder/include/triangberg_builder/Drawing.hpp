@@ -67,10 +67,10 @@ namespace com::saxbophone::triangberg {
         Drawing(
             Point origin,
             Unit size,
-            Angle rotation,
+            Degrees rotation,
             EdgeID branch_edge,
             Percentage branch_point,
-            Angle branch_angle
+            Degrees branch_angle
         );
 
         /**
