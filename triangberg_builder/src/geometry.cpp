@@ -66,7 +66,9 @@ namespace {
 }
 
 namespace com::saxbophone::triangberg {
-    Radians degrees_to_radians(Degrees d) { return {}; }
+    Radians degrees_to_radians(Degrees d) {
+        return d * (M_PI / 180.0);
+    }
 
     Degrees radians_to_degrees(Radians r) { return {}; }
 
