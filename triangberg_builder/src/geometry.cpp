@@ -64,11 +64,11 @@ namespace {
 }
 
 namespace com::saxbophone::triangberg {
-    Radians degrees_to_radians(Degrees) { return {}; }
+    Radians degrees_to_radians(Degrees d) { return {}; }
 
-    Degrees radians_to_degrees(Radians) { return {}; }
+    Degrees radians_to_degrees(Radians r) { return {}; }
 
-    Radians angle_between(Vector, Vector) { return {}; }
+    Radians angle_between(Vector a, Vector b) { return {}; }
 
     bool are_intersecting(Line a, Line b) {
         // test both if a intersects b and b intersects a
