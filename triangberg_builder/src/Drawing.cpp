@@ -8,6 +8,7 @@
 
 #include <functional>
 #include <memory>
+#include <set>
 #include <vector>
 
 #include <triangberg_builder/types.hpp>
@@ -44,7 +45,7 @@ namespace {
 
     private:
         Point _position;
-        std::vector<std::weak_ptr<Triangle>> _triangles;
+        std::set<std::weak_ptr<Triangle>, std::owner_less<std::weak_ptr<Triangle>>> _triangles;
     };
 
     class Triangle : public std::enable_shared_from_this<Triangle> {
@@ -138,7 +139,7 @@ namespace {
     // implemented out-of-class to avoid error due to incomplete type Triangle
     void Vertex::add_triangle(std::shared_ptr<Triangle> triangle) {
         if (triangle) {
-            this->_triangles.push_back(triangle);
+            this->_triangles.insert(triangle);
         }
         // XXX: debugging code to demonstrate Vertex can "see" Triangles via weak ref
         std::cout << "(" << this->_position.x << ", " << this->_position.y << ") triangles: ";
@@ -170,6 +171,10 @@ namespace com::saxbophone::triangberg {
         u->update_references();
         std::shared_ptr<Triangle> v = std::make_shared<Triangle>(2, t->get_vertex(1), u->get_vertex(1));
         v->update_references();
+        // now that Vertex stores its related Triangles in a set of weak_ptr,
+        // these duplicate calls don't duplicate the set of Triangle pointers!
+        t->update_references(); // XXX
+        t->update_references(); // XXX
     }
 
     Drawing::~Drawing() = default;
