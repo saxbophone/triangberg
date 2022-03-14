@@ -36,6 +36,8 @@ namespace {
     class Vertex {
     public:
         Vertex(Point position) : _position(position) {}
+
+        ~Vertex();
         // Vertex needs to know about every Triangle that uses it
         void add_triangle(std::shared_ptr<Triangle> triangle);
 
@@ -136,6 +138,11 @@ namespace {
         std::vector<std::shared_ptr<Vertex>> _vertices;
     };
 
+    Vertex::~Vertex() {
+        // XXX: debugging code to demonstrate Vertex can "see" Triangles via weak ref
+        std::cout << "(" << this->_position.x << ", " << this->_position.y << ") DELETED" << std::endl;
+    }
+
     // implemented out-of-class to avoid error due to incomplete type Triangle
     void Vertex::add_triangle(std::shared_ptr<Triangle> triangle) {
         if (triangle) {
@@ -175,6 +182,7 @@ namespace com::saxbophone::triangberg {
         // these duplicate calls don't duplicate the set of Triangle pointers!
         v->update_references(); // XXX
         t.reset();
+        v->update_references();
         u.reset();
         v->update_references(); // XXX
     }
