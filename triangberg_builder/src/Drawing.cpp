@@ -14,6 +14,8 @@
 #include <triangberg_builder/geometry.hpp>
 #include <triangberg_builder/Drawing.hpp>
 
+#include <iostream>
+
 namespace {
     using namespace com::saxbophone::triangberg;
 
@@ -34,11 +36,7 @@ namespace {
     public:
         Vertex(Point position) : _position(position) {}
         // Vertex needs to know about every Triangle that uses it
-        void add_triangle(std::shared_ptr<Triangle> triangle) {
-            if (triangle) {
-                this->_triangles.push_back(triangle);
-            }
-        }
+        void add_triangle(std::shared_ptr<Triangle> triangle);
 
         Point get_position() const {
             return this->_position;
@@ -128,14 +126,30 @@ namespace {
         std::shared_ptr<Vertex> get_vertex(std::size_t id) {
             return this->_vertices[id];
         }
+        std::size_t get_id() const {
+            return this->_id;
+        }
 
     private:
         std::size_t _id; // tracking identity explicitly is better than pointers
         std::vector<std::shared_ptr<Vertex>> _vertices;
     };
-}
 
-#include <iostream>
+    // implemented out-of-class to avoid error due to incomplete type Triangle
+    void Vertex::add_triangle(std::shared_ptr<Triangle> triangle) {
+        if (triangle) {
+            this->_triangles.push_back(triangle);
+        }
+        // XXX: debugging code to demonstrate Vertex can "see" Triangles via weak ref
+        std::cout << "(" << this->_position.x << ", " << this->_position.y << ") triangles: ";
+        for (auto& t : this->_triangles) {
+            if (std::shared_ptr<Triangle> tri = t.lock()) {
+                std::cout << tri->get_id() << ", ";
+            }
+        }
+        std::cout << std::endl;
+    }
+}
 
 namespace com::saxbophone::triangberg {
     class Drawing::Builder {};
@@ -152,19 +166,10 @@ namespace com::saxbophone::triangberg {
       {
         std::shared_ptr<Triangle> t = std::make_shared<Triangle>(0, origin, rotation, size);
         t->update_references();
-        for (auto point : t->get_shape()) {
-            std::cout << point.x << ", " << point.y << std::endl;
-        }
         std::shared_ptr<Triangle> u = std::make_shared<Triangle>(1, Point{400, 305}, Vector{10, 10});
         u->update_references();
-        for (auto point : u->get_shape()) {
-            std::cout << point.x << ", " << point.y << std::endl;
-        }
         std::shared_ptr<Triangle> v = std::make_shared<Triangle>(2, t->get_vertex(1), u->get_vertex(1));
         v->update_references();
-        for (auto point : v->get_shape()) {
-            std::cout << point.x << ", " << point.y << std::endl;
-        }
     }
 
     Drawing::~Drawing() = default;
