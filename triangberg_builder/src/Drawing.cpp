@@ -173,8 +173,10 @@ namespace com::saxbophone::triangberg {
         v->update_references();
         // now that Vertex stores its related Triangles in a set of weak_ptr,
         // these duplicate calls don't duplicate the set of Triangle pointers!
-        t->update_references(); // XXX
-        t->update_references(); // XXX
+        v->update_references(); // XXX
+        t.reset();
+        u.reset();
+        v->update_references(); // XXX
     }
 
     Drawing::~Drawing() = default;
