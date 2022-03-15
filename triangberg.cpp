@@ -5,12 +5,12 @@
 // fudge factor, for scaling up graphics. Will do for demos for now.
 // TODO: replace with automatic scaling of image to-screen size based on drawing
 // size.
-const std::size_t SCALE = 28;
+const std::size_t SCALE = 1;
 
 int main() {
     using namespace com::saxbophone::triangberg;
     // create the Drawing object
-    Drawing drawing({400, 300}, 10, 0, 2, 0.5, 1);
+    Drawing drawing({400, 300}, 50, -15, 1, 0.25, 15);
 
     // create the window
     sf::RenderWindow window(sf::VideoMode(800, 600), "My window");

@@ -127,6 +127,12 @@ namespace {
         std::shared_ptr<Vertex> get_vertex(std::size_t id) {
             return this->_vertices[id];
         }
+        Line get_edge(std::size_t id) {
+            return Line {
+                get_vertex(id)->get_position(),
+                get_vertex((id + 1) % this->_vertices.size())->get_position()
+            };
+        }
         std::size_t get_id() const {
             return this->_id;
         }
@@ -147,7 +153,77 @@ namespace {
 }
 
 namespace com::saxbophone::triangberg {
-    class Drawing::Builder {};
+    class Drawing::Builder {
+    public:
+        Builder(
+            Point origin,
+            Unit size,
+            Degrees rotation
+        ) : _triangles{std::make_shared<Triangle>(0, origin, rotation, size)} {
+            this->_triangles.back()->update_references();
+        }
+
+        void add_second_triangle(
+            EdgeID branch_edge,
+            Percentage branch_point,
+            Degrees branch_angle,
+            Unit size
+        ) {
+            Line branch_line = this->_triangles[0]->get_edge(branch_edge);
+            // get the vector of the line
+            Vector line_vector = {
+                branch_line.destination.x - branch_line.origin.x,
+                branch_line.destination.y - branch_line.origin.y
+            };
+            // create a scaled version of that vector
+            Vector scaled_vector = {
+                line_vector.x * branch_point, line_vector.y * branch_point
+            };
+            // add this to the origin to get the position of new triangle's first vertex
+            Point first_point = {
+                branch_line.origin.x + scaled_vector.x,
+                branch_line.origin.y + scaled_vector.y
+            };
+            // oh my..! this is way more involved than anticipated:
+            // we need to:
+            // - get a vector running opposite to that of the branch edge
+            // - scale it up to the same size as needed for the new triangle
+            // - rotate it so it has the requested angle between it and branch edge
+            // only then can we make the second triangle by passing it the branch point
+            // the vector that describes the first edge
+
+            // XXX: let's just cheat for now
+            Vector first_edge = {
+                35, 55
+            };
+            this->_triangles.push_back(
+                std::make_shared<Triangle>(1, first_point, first_edge)
+            );
+            this->_triangles.back()->update_references();
+        }
+
+        void add_third_triangle() {
+            this->_triangles.push_back(
+                std::make_shared<Triangle>(
+                    2,
+                    this->_triangles[0]->get_vertex(2),
+                    this->_triangles[1]->get_vertex(2)
+                )
+            );
+            this->_triangles.back()->update_references();
+        }
+
+        std::vector<Shape> get_shapes() const {
+            std::vector<Shape> shapes;
+            for (const auto t : this->_triangles) {
+                shapes.push_back(t->get_shape());
+            }
+            return shapes;
+        }
+
+    private:
+        std::vector<std::shared_ptr<Triangle>> _triangles;
+    };
 
     Drawing::Drawing(
         Point origin,
@@ -157,7 +233,7 @@ namespace com::saxbophone::triangberg {
         Percentage branch_point,
         Degrees branch_angle
     ) : _stage(0)
-      , _builder(new Builder())
+      , _builder(new Builder(origin, size, rotation))
       {
         std::shared_ptr<Triangle> t = std::make_shared<Triangle>(0, origin, rotation, size);
         t->update_references();
@@ -174,6 +250,18 @@ namespace com::saxbophone::triangberg {
     }
 
     void Drawing::add_triangle(std::function<std::size_t(std::size_t)>) {
+        switch (this->_stage) {
+        case 0:
+            // add second triangle at an angle and partway on an edge
+            this->_builder->add_second_triangle(1, 0.25, 15, 40);
+            break;
+        case 1:
+            // add third triangle joining two previous triangles
+            this->_builder->add_third_triangle();
+            break;
+        default:
+            break;
+        }
         if (this->_stage < 6) {
             this->_stage++;
         }
@@ -184,15 +272,15 @@ namespace com::saxbophone::triangberg {
         switch (this->_stage) {
             case 0:
                 return {
-                    {A, B, C,}, {{A, B, C},}
+                    {A, B, C,}, this->_builder->get_shapes()
                 };
             case 1:
                 return {
-                    {A, B, D, E, F, D, C,}, {{A, B, C}, {D, E, F},}
+                    {A, B, D, E, F, D, C,}, this->_builder->get_shapes()
                 };
             case 2:
                 return {
-                    {A, B, G, E, F, D, C,}, {{A, B, C}, {D, E, F}, {B, G, E},}
+                    {A, B, G, E, F, D, C,}, this->_builder->get_shapes()
                 };
             case 3:
                 return {

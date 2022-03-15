@@ -57,6 +57,7 @@ namespace com::saxbophone::triangberg {
          * @param branch_angle angle between branch edge and first edge of new
          * triangle
          * @note branch_angle range is `0° < x < 120°`
+         * @todo Add branch size (size of branched triangle) --missed out.
          */
         Drawing(
             Point origin,
