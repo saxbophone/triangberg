@@ -44,16 +44,16 @@ int main() {
         // draw all the triangles first
         for (const Drawing::Shape& t : shapes.triangles) {
             sf::VertexArray triangle(sf::Triangles, 3);
-
-            // define the position of the triangle's points
-            triangle[0].position = sf::Vector2f(t[0].x * SCALE, t[0].y * SCALE);
-            triangle[1].position = sf::Vector2f(t[1].x * SCALE, t[1].y * SCALE);
-            triangle[2].position = sf::Vector2f(t[2].x * SCALE, t[2].y * SCALE);
-
-            // define the color of the triangle's points
-            triangle[0].color = sf::Color::Red;
-            triangle[1].color = sf::Color::Blue;
-            triangle[2].color = sf::Color::Green;
+            // colours to use for each vertex
+            sf::Color colours[] = {
+                sf::Color::Red, sf::Color::Green, sf::Color::Blue,
+            };
+            for (std::size_t i = 0; i < 3; i++) {
+                // define the position of the triangle's points
+                triangle[i].position = sf::Vector2f(t[i].x * SCALE, t[i].y * SCALE);
+                // define the color of the triangle's points
+                triangle[i].color = colours[i];
+            }
 
             window.draw(triangle);
         }
