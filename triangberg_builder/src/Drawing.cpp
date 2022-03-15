@@ -4,6 +4,7 @@
  * <Copyright information goes here>
  */
 
+#include <cmath>
 #include <cstddef>
 
 #include <functional>
@@ -180,9 +181,12 @@ namespace com::saxbophone::triangberg {
             // - get a vector running opposite to that of the branch edge
             Vector opposite = line_vector * -1;
             // - scale it up to the same size as needed for the new triangle
-            // XXX: we'll take size to be side length for now
-            // TODO: scale for actual size as in triangle diameter
-            Unit scale = size / opposite.length();
+            // scale for actual size as in triangle diameter
+            // the radius of the triangle is the circumscribed circle radius (R)
+            // R = a / sqrt(3)
+            // a = sqrt(3) * R
+            // with a as side length
+            Unit scale = (std::sqrt(3) * size) / opposite.length();
             Vector scaled_opposite = opposite * scale;
             // - rotate it so it has the requested angle between it and branch edge
             Point branching_edge = subtend_point_from_vector(
