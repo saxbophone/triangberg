@@ -218,7 +218,7 @@ namespace com::saxbophone::triangberg {
 
         std::vector<Shape> get_shapes() const {
             std::vector<Shape> shapes;
-            for (const auto t : this->_triangles) {
+            for (const auto& t : this->_triangles) {
                 shapes.push_back(t->get_shape());
             }
             return shapes;

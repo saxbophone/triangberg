@@ -18,11 +18,20 @@
 #define COM_SAXBOPHONE_TRIANGBERG_POINT_HPP
 
 #include <triangberg_builder/types.hpp>
+#include <triangberg_builder/Vector.hpp>
 
 namespace com::saxbophone::triangberg {
     struct Point {
         Unit x;
         Unit y;
+        // conversion operator to Vector
+        operator Vector() const;
+        // subtracting another Point from this one yields their delta as a Vector
+        Vector operator-(const Point& other) const;
+        // adding a Vector to this Point yields a Point translated along the Vector from this one
+        Point operator+(const Vector& delta) const;
+        // likewise for subtracting a vector
+        Point operator-(const Vector& delta) const;
     };
 }
 

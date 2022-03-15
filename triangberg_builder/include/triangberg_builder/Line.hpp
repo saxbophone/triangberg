@@ -19,11 +19,14 @@
 
 #include <triangberg_builder/types.hpp>
 #include <triangberg_builder/Point.hpp>
+#include <triangberg_builder/Vector.hpp>
 
 namespace com::saxbophone::triangberg {
     struct Line {
         Point origin;
         Point destination;
+        // converting Line to Vector gets the Vector delta between start and end
+        operator Vector() const;
     };
 }
 
