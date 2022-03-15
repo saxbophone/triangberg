@@ -15,8 +15,6 @@
 #include <triangberg_builder/geometry.hpp>
 #include <triangberg_builder/Drawing.hpp>
 
-#include <iostream>
-
 namespace {
     using namespace com::saxbophone::triangberg;
 
@@ -138,24 +136,13 @@ namespace {
         std::vector<std::shared_ptr<Vertex>> _vertices;
     };
 
-    Vertex::~Vertex() {
-        // XXX: debugging code to demonstrate Vertex can "see" Triangles via weak ref
-        std::cout << "(" << this->_position.x << ", " << this->_position.y << ") DELETED" << std::endl;
-    }
+    Vertex::~Vertex() = default;
 
     // implemented out-of-class to avoid error due to incomplete type Triangle
     void Vertex::add_triangle(std::shared_ptr<Triangle> triangle) {
         if (triangle) {
             this->_triangles.insert(triangle);
         }
-        // XXX: debugging code to demonstrate Vertex can "see" Triangles via weak ref
-        std::cout << "(" << this->_position.x << ", " << this->_position.y << ") triangles: ";
-        for (auto& t : this->_triangles) {
-            if (std::shared_ptr<Triangle> tri = t.lock()) {
-                std::cout << tri->get_id() << ", ";
-            }
-        }
-        std::cout << std::endl;
     }
 }
 
@@ -178,13 +165,6 @@ namespace com::saxbophone::triangberg {
         u->update_references();
         std::shared_ptr<Triangle> v = std::make_shared<Triangle>(2, t->get_vertex(1), u->get_vertex(1));
         v->update_references();
-        // now that Vertex stores its related Triangles in a set of weak_ptr,
-        // these duplicate calls don't duplicate the set of Triangle pointers!
-        v->update_references(); // XXX
-        t.reset();
-        v->update_references();
-        u.reset();
-        v->update_references(); // XXX
     }
 
     Drawing::~Drawing() = default;
