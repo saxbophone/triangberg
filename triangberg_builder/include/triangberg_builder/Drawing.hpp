@@ -24,6 +24,7 @@
 #include <vector>
 
 #include <triangberg_builder/types.hpp>
+#include <triangberg_builder/Point.hpp>
 
 namespace com::saxbophone::triangberg {
     /**

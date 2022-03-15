@@ -14,29 +14,16 @@
  *
  */
 
-#ifndef COM_SAXBOPHONE_TRIANGBERG_STRUCTS_HPP
-#define COM_SAXBOPHONE_TRIANGBERG_STRUCTS_HPP
+#ifndef COM_SAXBOPHONE_TRIANGBERG_POINT_HPP
+#define COM_SAXBOPHONE_TRIANGBERG_POINT_HPP
 
-#include <cstddef>
+#include <triangberg_builder/types.hpp>
 
 namespace com::saxbophone::triangberg {
-    typedef double Unit;
-
-    typedef Unit Degrees;
-
-    typedef Unit Radians;
-
-    typedef Unit Percentage;
-
-    typedef std::size_t EdgeID;
-
-    // forward-declarations
-
-    struct Point;
-
-    struct Vector;
-
-    struct Line;
+    struct Point {
+        Unit x;
+        Unit y;
+    };
 }
 
 #endif // include guard

@@ -14,6 +14,9 @@
 #include <triangberg_builder/types.hpp>
 #include <triangberg_builder/geometry.hpp>
 #include <triangberg_builder/Drawing.hpp>
+#include <triangberg_builder/Line.hpp>
+#include <triangberg_builder/Point.hpp>
+#include <triangberg_builder/Vector.hpp>
 
 namespace {
     using namespace com::saxbophone::triangberg;

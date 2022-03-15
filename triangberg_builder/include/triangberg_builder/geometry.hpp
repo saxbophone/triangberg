@@ -20,6 +20,9 @@
 #include <vector>
 
 #include <triangberg_builder/types.hpp>
+#include <triangberg_builder/Line.hpp>
+#include <triangberg_builder/Point.hpp>
+#include <triangberg_builder/Vector.hpp>
 
 namespace com::saxbophone::triangberg {
     // Lower-level geometry helpers
