@@ -80,9 +80,7 @@ namespace {
             std::shared_ptr<Vertex> first_vertex = std::make_shared<Vertex>(first_point);
             this->_vertices.push_back(first_vertex);
             // for the second vertex we just follow the vector of the first edge from the first vertex
-            Point second_point = {
-                first_point.x + first_edge.x, first_point.y + first_edge.y
-            };
+            Point second_point = first_point + first_edge;
             std::shared_ptr<Vertex> second_vertex = std::make_shared<Vertex>(second_point);
             this->_vertices.push_back(second_vertex);
             // for the final vertex we need to subtend the first_edge by 60° around the first_point
@@ -101,9 +99,7 @@ namespace {
             // work out what the vector of the first edge is
             Point first_point = first->get_position();
             Point second_point = second->get_position();
-            Vector first_edge = {
-                second_point.x - first_point.x, second_point.y - first_point.y
-            };
+            Vector first_edge = second_point - first_point;
             // subtend this vector about the first point to find the third point
             std::shared_ptr<Vertex> third_vertex = std::make_shared<Vertex>(
                 subtend_point_from_vector(
@@ -174,19 +170,11 @@ namespace com::saxbophone::triangberg {
         ) {
             Line branch_line = this->_triangles[0]->get_edge(branch_edge);
             // get the vector of the line
-            Vector line_vector = {
-                branch_line.destination.x - branch_line.origin.x,
-                branch_line.destination.y - branch_line.origin.y
-            };
+            Vector line_vector = branch_line;
             // create a scaled version of that vector
-            Vector scaled_vector = {
-                line_vector.x * branch_point, line_vector.y * branch_point
-            };
+            Vector scaled_vector = line_vector * branch_point;
             // add this to the origin to get the position of new triangle's first vertex
-            Point first_point = {
-                branch_line.origin.x + scaled_vector.x,
-                branch_line.origin.y + scaled_vector.y
-            };
+            Point first_point = branch_line.origin + scaled_vector;
             // oh my..! this is way more involved than anticipated:
             // we need to:
             // - get a vector running opposite to that of the branch edge
@@ -237,14 +225,7 @@ namespace com::saxbophone::triangberg {
         Degrees branch_angle
     ) : _stage(0)
       , _builder(new Builder(origin, size, rotation))
-      {
-        std::shared_ptr<Triangle> t = std::make_shared<Triangle>(0, origin, rotation, size);
-        t->update_references();
-        std::shared_ptr<Triangle> u = std::make_shared<Triangle>(1, Point{400, 305}, Vector{10, 10});
-        u->update_references();
-        std::shared_ptr<Triangle> v = std::make_shared<Triangle>(2, t->get_vertex(1), u->get_vertex(1));
-        v->update_references();
-    }
+      {}
 
     Drawing::~Drawing() = default;
 
