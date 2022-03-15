@@ -4,6 +4,8 @@
  * <Copyright information goes here>
  */
 
+#include <cmath>
+
 #include <triangberg_builder/Point.hpp>
 #include <triangberg_builder/Vector.hpp>
 
@@ -23,5 +25,9 @@ namespace com::saxbophone::triangberg {
     // multiplying Vector by scalar multiples the Vector components elementwise
     Vector Vector::operator*(Unit scalar) const {
         return {x * scalar, y * scalar};
+    }
+    // get length of the vector (aka magnitude)
+    Unit Vector::length() const {
+        return std::sqrt(x*x + y*y);
     }
 }

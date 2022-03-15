@@ -32,6 +32,8 @@ namespace com::saxbophone::triangberg {
         Vector operator-(const Vector& other) const;
         // multiplying Vector by scalar multiples the Vector components elementwise
         Vector operator*(Unit scalar) const;
+        // get length of the vector (aka magnitude)
+        Unit length() const;
     };
 }
 
