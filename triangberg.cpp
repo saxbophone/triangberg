@@ -5,12 +5,12 @@
 // fudge factor, for scaling up graphics. Will do for demos for now.
 // TODO: replace with automatic scaling of image to-screen size based on drawing
 // size.
-const std::size_t SCALE = 1;
+const std::size_t SCALE = 28;
 
 int main() {
     using namespace com::saxbophone::triangberg;
     // create the Drawing object
-    Drawing drawing({400, 300}, 50, -15, 1, 0.25, 15);
+    Drawing drawing({400, 300}, 50, -5, 0, 0.25, 1);
 
     // create the window
     sf::RenderWindow window(sf::VideoMode(800, 600), "My window");
@@ -50,7 +50,7 @@ int main() {
             };
             for (std::size_t i = 0; i < 3; i++) {
                 // define the position of the triangle's points
-                triangle[i].position = sf::Vector2f(t[i].x * SCALE, t[i].y * SCALE);
+                triangle[i].position = sf::Vector2f(t[i].x, t[i].y);
                 // define the color of the triangle's points
                 triangle[i].color = colours[i];
             }

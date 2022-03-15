@@ -178,17 +178,20 @@ namespace com::saxbophone::triangberg {
             // oh my..! this is way more involved than anticipated:
             // we need to:
             // - get a vector running opposite to that of the branch edge
+            Vector opposite = line_vector * -1;
             // - scale it up to the same size as needed for the new triangle
+            // XXX: we'll take size to be side length for now
+            // TODO: scale for actual size as in triangle diameter
+            Unit scale = size / opposite.length();
+            Vector scaled_opposite = opposite * scale;
             // - rotate it so it has the requested angle between it and branch edge
+            Point branching_edge = subtend_point_from_vector(
+                first_point, scaled_opposite, degrees_to_radians(branch_angle)
+            );
             // only then can we make the second triangle by passing it the branch point
             // the vector that describes the first edge
-
-            // XXX: let's just cheat for now
-            Vector first_edge = {
-                35, 55
-            };
             this->_triangles.push_back(
-                std::make_shared<Triangle>(1, first_point, first_edge)
+                std::make_shared<Triangle>(1, first_point, branching_edge - first_point)
             );
             this->_triangles.back()->update_references();
         }
@@ -237,7 +240,7 @@ namespace com::saxbophone::triangberg {
         switch (this->_stage) {
         case 0:
             // add second triangle at an angle and partway on an edge
-            this->_builder->add_second_triangle(1, 0.25, 15, 40);
+            this->_builder->add_second_triangle(0, 0.9, 80, 120);
             break;
         case 1:
             // add third triangle joining two previous triangles
