@@ -86,7 +86,7 @@ namespace {
             std::shared_ptr<Vertex> third_vertex = std::make_shared<Vertex>(
                 subtend_point_from_vector(
                     first_point, first_edge,
-                    degrees_to_radians(60) // TODO: vary sign for collisions
+                    degrees_to_radians(60)
                 )
             );
             this->_vertices.push_back(third_vertex);
@@ -105,7 +105,7 @@ namespace {
             std::shared_ptr<Vertex> third_vertex = std::make_shared<Vertex>(
                 subtend_point_from_vector(
                     first_point, first_edge,
-                    degrees_to_radians(60) // TODO: vary sign for collisions
+                    degrees_to_radians(60)
                 )
             );
             this->_vertices.push_back(third_vertex);
