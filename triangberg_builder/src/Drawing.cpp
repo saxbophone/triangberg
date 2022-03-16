@@ -267,7 +267,7 @@ namespace com::saxbophone::triangberg {
         bool add_next_triangle() {
             auto next_triangles = this->get_possible_next_triangles();
             if (next_triangles.size() > 0) {
-                this->_triangles.push_back(next_triangles.back());
+                this->_triangles.push_back(next_triangles.front());
                 this->_triangles.back()->update_references();
                 return true;
             }
@@ -328,8 +328,25 @@ namespace com::saxbophone::triangberg {
                                         off_screen++;
                                     }
                                 }
-                                // TODO: OR that at least one of its edges intersects the screen bounds
-                                if (off_screen < 3) {
+                                bool plot = off_screen < 3;
+                                // or that at least one of its edges intersects the screen bounds
+                                if (not plot) {
+                                    Line screen_edges[] = {
+                                        {{0, 0}, {this->_screen_size.x, 0}},
+                                        {{0, 0}, {0, this->_screen_size.y}},
+                                        {{0, this->_screen_size.y}, {this->_screen_size.x, this->_screen_size.y}},
+                                        {{this->_screen_size.x, 0}, {this->_screen_size.x, this->_screen_size.y}},
+                                    };
+                                    for (std::size_t e = 0; e < 3; e++) {
+                                        for (auto edge : screen_edges) {
+                                            if (are_intersecting(candidate->get_edge(e), edge)) {
+                                                plot = true;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                                if (plot) {
                                     // add it if it doesn't intersect any of the others
                                     if (not candidate->intersects_with(this->_triangles)) {
                                         // XXX: here, we *would* check if the resultant triangle would overlap
@@ -385,7 +402,7 @@ namespace com::saxbophone::triangberg {
     void Drawing::add_triangle(std::function<std::size_t(std::size_t)>) {
         if (not this->_started) {
             // add second triangle at an angle and partway on an edge
-            this->_builder->add_second_triangle(10);
+            this->_builder->add_second_triangle(40);
             this->_started = true;
         } else if (this->_can_add_more) {
             this->_can_add_more = this->_builder->add_next_triangle();

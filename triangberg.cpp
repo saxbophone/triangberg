@@ -22,14 +22,18 @@ int main() {
     // don't kill my CPU by running at stupid-fast framerate for no reason
     window.setFramerateLimit(60);
 
-    Unit angle = 1;
-    Percentage p = 0.1;
+    Degrees angle = 0.1;
+    Percentage p = 0.01;
+    Unit base_angle = 0;
 
     sf::Event event;
     // click when ready to start
     do {
         window.pollEvent(event);
     } while (event.type != sf::Event::MouseButtonPressed);
+
+    Degrees angle_delta = 0.1;
+    Unit p_delta = 0.01;
 
     // run the program as long as the window is open
     while (window.isOpen()) {
@@ -43,7 +47,7 @@ int main() {
         }
 
         // create the Drawing object
-        Drawing drawing({200, 200}, 10, 0, 1, p, angle, {800, 600});
+        Drawing drawing({400, 300}, 50, base_angle, 1, p, angle, {800, 600});
         std::size_t give_up = 0;
         while (not drawing.is_complete() and give_up < 200) {
             // dummy lambda --we don't care about it as it's not currently used
@@ -52,12 +56,13 @@ int main() {
         }
         std::cout << "p: " << p << " angle: " << angle << std::endl;
 
-        angle += 1;
-        if (angle >= 119.9) {
-            angle = 1;
-            p += 0.1;
-            if (p >= 0.9) {
-                p = 0.1;
+        angle += angle_delta;
+        base_angle -= (angle_delta * 0.75);
+        if (0.1 >= angle or angle >= 119.9) {
+            angle_delta *= -1;
+            p += p_delta;
+            if (0.01 >= p or p >= 0.99) {
+                p_delta *= -1;
             }
         }
 
