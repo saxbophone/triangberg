@@ -13,6 +13,9 @@
 
 #include <triangberg_builder/types.hpp>
 #include <triangberg_builder/geometry.hpp>
+#include <triangberg_builder/Line.hpp>
+#include <triangberg_builder/Point.hpp>
+#include <triangberg_builder/Vector.hpp>
 
 // are_intersecting implementation
 namespace {
@@ -20,9 +23,7 @@ namespace {
 
     // derives angle of Line
     Radians get_angle(Line l) {
-        Point delta = {
-            l.destination.x - l.origin.x, l.destination.y - l.origin.y,
-        };
+        Vector delta = l; // convert Line to Vector
         return std::atan2(delta.y, delta.x);
     }
 
@@ -86,9 +87,7 @@ namespace com::saxbophone::triangberg {
         // first we rotate v around the x/y origin as if it was at that location
         rotate_point(v.x, v.y, theta);
         // then we turn origin into a vector and add the rotated position to it
-        return Point {
-            origin.x + v.x, origin.y + v.y
-        };
+        return origin + v;
     }
 
     bool are_intersecting(Line a, Line b) {

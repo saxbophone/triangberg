@@ -6,6 +6,9 @@ target_sources(
             Public.cpp
             Drawing.cpp
             geometry.cpp
+            Line.cpp
+            Point.cpp
+            Vector.cpp
 )
 # sub-namespace source directories
 # NOTE: none yet!
