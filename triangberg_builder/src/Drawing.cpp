@@ -19,8 +19,6 @@
 #include <triangberg_builder/Point.hpp>
 #include <triangberg_builder/Vector.hpp>
 
-#include <iostream>
-
 namespace {
     using namespace com::saxbophone::triangberg;
 
@@ -151,7 +149,6 @@ namespace {
         Drawing::Shape get_shape() const {
             Drawing::Shape shape;
             for (auto vertex : this->_vertices) {
-                std::cout << vertex->get_position().x << ", " << vertex->get_position().y << std::endl;
                 shape.push_back(vertex->get_position());
             }
             return shape;
@@ -220,22 +217,25 @@ namespace com::saxbophone::triangberg {
         Builder(
             Point origin,
             Unit size,
-            Degrees rotation
-        ) : _triangles{std::make_shared<Triangle>(0, origin, rotation, size)} {
+            Degrees rotation,
+            EdgeID branch_edge,
+            Percentage branch_point,
+            Degrees branch_angle
+        )
+          : _triangles{std::make_shared<Triangle>(0, origin, rotation, size)}
+          , _branch_edge(branch_edge)
+          , _branch_point(branch_point)
+          , _branch_angle(branch_angle)
+          {
             this->_triangles.back()->update_references();
         }
 
-        void add_second_triangle(
-            EdgeID branch_edge,
-            Percentage branch_point,
-            Degrees branch_angle,
-            Unit size
-        ) {
-            Line branch_line = this->_triangles[0]->get_edge(branch_edge);
+        void add_second_triangle(Unit size) {
+            Line branch_line = this->_triangles[0]->get_edge(this->_branch_edge);
             // get the vector of the line
             Vector line_vector = branch_line;
             // create a scaled version of that vector
-            Vector scaled_vector = line_vector * branch_point;
+            Vector scaled_vector = line_vector * this->_branch_point;
             // add this to the origin to get the position of new triangle's first vertex
             Point first_point = branch_line.origin + scaled_vector;
             // oh my..! this is way more involved than anticipated:
@@ -252,7 +252,7 @@ namespace com::saxbophone::triangberg {
             Vector scaled_opposite = opposite * scale;
             // - rotate it so it has the requested angle between it and branch edge
             Point branching_edge = subtend_point_from_vector(
-                first_point, scaled_opposite, degrees_to_radians(branch_angle)
+                first_point, scaled_opposite, degrees_to_radians(this->_branch_angle)
             );
             // only then can we make the second triangle by passing it the branch point
             // the vector that describes the first edge
@@ -262,33 +262,21 @@ namespace com::saxbophone::triangberg {
             this->_triangles.back()->update_references();
         }
 
-        void add_third_triangle() {
-            this->_triangles.push_back(
-                std::make_shared<Triangle>(
-                    2,
-                    this->_triangles[1]->get_vertex(1),
-                    this->_triangles[0]->get_vertex(0)
-                )
-            );
-            this->_triangles.back()->update_references();
-        }
-
-        void add_next_triangle() {
+        bool add_next_triangle() {
             auto next_triangles = this->get_possible_next_triangles();
             if (next_triangles.size() > 0) {
                 this->_triangles.push_back(next_triangles[0]);
-                std::cout << "ADD NEW TRIANGLE" << std::endl;
                 this->_triangles.back()->update_references();
+                return true;
             }
+            return false;
         }
 
         std::vector<Shape> get_shapes() const {
             std::vector<Shape> shapes;
             for (const auto& t : this->_triangles) {
-                std::cout << "SHAPE ";
                 shapes.push_back(t->get_shape());
             }
-            std::cout << std::endl;
             return shapes;
         }
 
@@ -328,7 +316,6 @@ namespace com::saxbophone::triangberg {
                                 );
                                 // add it if it doesn't intersect any of the others
                                 if (not candidate->intersects_with(this->_triangles)) {
-                                    std::cout << i << " " << j << std::endl;
                                     // XXX: here, we *would* check if the resultant triangle would overlap
                                     // instead, we'll just assume that it doesn't for now...
                                     candidates.push_back(candidate);
@@ -343,6 +330,9 @@ namespace com::saxbophone::triangberg {
 
     private:
         std::vector<std::shared_ptr<Triangle>> _triangles;
+        EdgeID _branch_edge;
+        Percentage _branch_point;
+        Degrees _branch_angle;
     };
 
     Drawing::Drawing(
@@ -352,31 +342,33 @@ namespace com::saxbophone::triangberg {
         EdgeID branch_edge,
         Percentage branch_point,
         Degrees branch_angle
-    ) : _stage(0)
-      , _builder(new Builder(origin, size, rotation))
+    ) : _builder(
+            new Builder(
+                origin,
+                size,
+                rotation,
+                branch_edge,
+                branch_point,
+                branch_angle
+            )
+        )
+      , _started(false)
+      , _can_add_more(true)
       {}
 
     Drawing::~Drawing() = default;
 
     bool Drawing::is_complete() const {
-        return false;
+        return not this->_can_add_more;
     }
 
     void Drawing::add_triangle(std::function<std::size_t(std::size_t)>) {
-        switch (this->_stage) {
-        case 0:
+        if (not this->_started) {
             // add second triangle at an angle and partway on an edge
-            this->_builder->add_second_triangle(0, 0.9, 80, 20);
-            break;
-        case 1:
-            this->_builder->add_third_triangle();
-            break;
-        default:
-            this->_builder->add_next_triangle();
-            break;
-        }
-        if (this->_stage < 6) {
-            this->_stage++;
+            this->_builder->add_second_triangle(10);
+            this->_started = true;
+        } else if (this->_can_add_more) {
+            this->_can_add_more = this->_builder->add_next_triangle();
         }
     }
 

@@ -98,11 +98,10 @@ namespace com::saxbophone::triangberg {
         Shapes get_shapes() const;
 
     private:
-        // XXX: for stub implementation to test drawing:
-        // tracks what demo stage the drawing is up to
-        std::size_t _stage;
         class Builder; // forward-declaration of helper class for implementation
         std::unique_ptr<Builder> _builder;
+        bool _started;
+        bool _can_add_more;
     };
 }
 
