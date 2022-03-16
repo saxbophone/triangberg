@@ -66,7 +66,8 @@ namespace com::saxbophone::triangberg {
             Degrees rotation,
             EdgeID branch_edge,
             Percentage branch_point,
-            Degrees branch_angle
+            Degrees branch_angle,
+            Vector screen_size
         );
 
         ~Drawing();

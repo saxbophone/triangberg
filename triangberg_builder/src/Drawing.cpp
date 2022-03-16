@@ -220,12 +220,14 @@ namespace com::saxbophone::triangberg {
             Degrees rotation,
             EdgeID branch_edge,
             Percentage branch_point,
-            Degrees branch_angle
+            Degrees branch_angle,
+            Vector screen_size
         )
           : _triangles{std::make_shared<Triangle>(0, origin, rotation, size)}
           , _branch_edge(branch_edge)
           , _branch_point(branch_point)
           , _branch_angle(branch_angle)
+          , _screen_size(screen_size)
           {
             this->_triangles.back()->update_references();
         }
@@ -314,11 +316,26 @@ namespace com::saxbophone::triangberg {
                                 std::shared_ptr<Triangle> candidate = std::make_shared<Triangle>(
                                     this->_triangles.size(), i_vertex, j_vertex
                                 );
-                                // add it if it doesn't intersect any of the others
-                                if (not candidate->intersects_with(this->_triangles)) {
-                                    // XXX: here, we *would* check if the resultant triangle would overlap
-                                    // instead, we'll just assume that it doesn't for now...
-                                    candidates.push_back(candidate);
+                                // check that at least one of the candidate's vertices is on-screen
+                                std::size_t off_screen = 0;
+                                for (const auto& vertex : candidate->get_shape()) {
+                                    if (
+                                        vertex.x < 0 or
+                                        vertex.x > this->_screen_size.x or
+                                        vertex.y < 0 or
+                                        vertex.y > this->_screen_size.y
+                                    ) {
+                                        off_screen++;
+                                    }
+                                }
+                                // TODO: OR that at least one of its edges intersects the screen bounds
+                                if (off_screen < 3) {
+                                    // add it if it doesn't intersect any of the others
+                                    if (not candidate->intersects_with(this->_triangles)) {
+                                        // XXX: here, we *would* check if the resultant triangle would overlap
+                                        // instead, we'll just assume that it doesn't for now...
+                                        candidates.push_back(candidate);
+                                    }
                                 }
                             // }
                         }
@@ -333,6 +350,7 @@ namespace com::saxbophone::triangberg {
         EdgeID _branch_edge;
         Percentage _branch_point;
         Degrees _branch_angle;
+        Vector _screen_size;
     };
 
     Drawing::Drawing(
@@ -341,7 +359,8 @@ namespace com::saxbophone::triangberg {
         Degrees rotation,
         EdgeID branch_edge,
         Percentage branch_point,
-        Degrees branch_angle
+        Degrees branch_angle,
+        Vector screen_size
     ) : _builder(
             new Builder(
                 origin,
@@ -349,7 +368,8 @@ namespace com::saxbophone::triangberg {
                 rotation,
                 branch_edge,
                 branch_point,
-                branch_angle
+                branch_angle,
+                screen_size
             )
         )
       , _started(false)

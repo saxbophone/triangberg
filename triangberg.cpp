@@ -43,9 +43,9 @@ int main() {
         }
 
         // create the Drawing object
-        Drawing drawing({200, 200}, 10, 0, 1, p, angle);
+        Drawing drawing({200, 200}, 10, 0, 1, p, angle, {800, 600});
         std::size_t give_up = 0;
-        while (not drawing.is_complete() and give_up < 50) {
+        while (not drawing.is_complete() and give_up < 200) {
             // dummy lambda --we don't care about it as it's not currently used
             drawing.add_triangle([](std::size_t)->std::size_t {return 0;});
             give_up++;
@@ -67,10 +67,10 @@ int main() {
         // draw everything here...
         Drawing::Shapes shapes = drawing.get_shapes();
         // draw all the triangles first
-        // don't ever draw more than 20 objects
+        // don't ever draw more than 200 objects
         std::size_t drawn = 0;
         for (const Drawing::Shape& t : shapes.triangles) {
-            if (drawn >= 50) {
+            if (drawn >= 200) {
                 break;
             }
             sf::VertexArray triangle(sf::Triangles, 3);
