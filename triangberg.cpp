@@ -29,14 +29,12 @@ int main() {
             } else if (event.type == sf::Event::MouseButtonPressed) {
                 if (not drawing.is_complete()) {
                     // dummy lambda --we don't care about it as it's not currently used
-                    // drawing.add_triangle([](std::size_t)->std::size_t {return 0;});
+                    drawing.add_triangle([](std::size_t)->std::size_t {return 0;});
                 } else {
                     window.close();
                 }
             }
         }
-
-        drawing.add_triangle([](std::size_t)->std::size_t {return 0;});
 
         // clear the window with black color
         window.clear(sf::Color::Black);

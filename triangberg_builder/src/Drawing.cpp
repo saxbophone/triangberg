@@ -19,6 +19,8 @@
 #include <triangberg_builder/Point.hpp>
 #include <triangberg_builder/Vector.hpp>
 
+#include <iostream>
+
 namespace {
     using namespace com::saxbophone::triangberg;
 
@@ -62,6 +64,16 @@ namespace {
                 }
             }
             return count;
+        }
+
+        // returns true if these two vertices share any common triangles
+        bool common_to(const Vertex& other) const {
+            for (const auto& t : this->_triangles) {
+                if (other._triangles.contains(t)) {
+                    return true;
+                }
+            }
+            return false;
         }
 
     private:
@@ -139,6 +151,7 @@ namespace {
         Drawing::Shape get_shape() const {
             Drawing::Shape shape;
             for (auto vertex : this->_vertices) {
+                std::cout << vertex->get_position().x << ", " << vertex->get_position().y << std::endl;
                 shape.push_back(vertex->get_position());
             }
             return shape;
@@ -154,6 +167,36 @@ namespace {
         }
         std::size_t get_id() const {
             return this->_id;
+        }
+        // determines whether this Triangle intersects with any in the given vector
+        bool intersects_with(std::vector<std::shared_ptr<Triangle>> others) {
+            for (auto t : others) {
+                for (std::size_t i = 0; i < 3; i++) {
+                    for (std::size_t j = 0; j < 3; j++) {
+                        Line our_edge = this->get_edge(i);
+                        Line their_edge = t->get_edge(j);
+                        // XXX: the intersection code is a bit false-positivy
+                        // XXX: skip checking intersections when a vertice is shared
+                        if (
+                            our_edge.origin == their_edge.origin or
+                            our_edge.origin == their_edge.destination or
+                            our_edge.destination == their_edge.origin or
+                            our_edge.destination == their_edge.destination
+                        ) {
+                            continue;
+                        }
+                        if (are_intersecting(our_edge, their_edge)) {
+                            // std::cout << "INTERSECT " << t->get_id() << " : (" << our_edge.origin.x << ", "
+                            // << our_edge.origin.y << ")->(" << our_edge.destination.x << ", "
+                            // << our_edge.destination.y << ") with (" << their_edge.origin.x << ", "
+                            // << their_edge.origin.y << ")->(" << their_edge.destination.x << ", "
+                            // << their_edge.destination.y << ")" << std::endl;
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
         }
 
     private:
@@ -223,28 +266,34 @@ namespace com::saxbophone::triangberg {
             this->_triangles.push_back(
                 std::make_shared<Triangle>(
                     2,
-                    this->_triangles[0]->get_vertex(2),
-                    this->_triangles[1]->get_vertex(2)
+                    this->_triangles[1]->get_vertex(1),
+                    this->_triangles[0]->get_vertex(0)
                 )
             );
             this->_triangles.back()->update_references();
         }
 
         void add_next_triangle() {
-            this->_triangles.push_back(this->get_possible_next_triangles()[0]);
-            this->_triangles.back()->update_references();
+            auto next_triangles = this->get_possible_next_triangles();
+            if (next_triangles.size() > 0) {
+                this->_triangles.push_back(next_triangles[0]);
+                std::cout << "ADD NEW TRIANGLE" << std::endl;
+                this->_triangles.back()->update_references();
+            }
         }
 
         std::vector<Shape> get_shapes() const {
             std::vector<Shape> shapes;
             for (const auto& t : this->_triangles) {
+                std::cout << "SHAPE ";
                 shapes.push_back(t->get_shape());
             }
+            std::cout << std::endl;
             return shapes;
         }
 
         // returns a vector of all possible new Triangles we could place
-        std::vector<std::shared_ptr<Triangle>> get_possible_next_triangles() const {
+        std::vector<std::shared_ptr<Triangle>> get_possible_next_triangles() {
             std::vector<std::shared_ptr<Triangle>> candidates;
             // rules:
             // - vertices must be from different triangles
@@ -252,10 +301,9 @@ namespace com::saxbophone::triangberg {
             // - resulting triangle must not intersect any other (not yet implemented)
             for (std::size_t i = 0; i < this->_triangles.size(); i++) {
                 for (std::size_t j = 0; j < this->_triangles.size(); j++) {
-                    // skip when it's the same triangle
-                    if (i == j) {
-                        continue;
-                    }
+                    // if (i == j) {
+                    //     continue;
+                    // }
                     for (std::size_t iv = 0; iv < 3; iv++) {
                         std::shared_ptr<Vertex> i_vertex = this->_triangles[i]->get_vertex(iv);
                         // skip early if vertex ineligible
@@ -268,19 +316,24 @@ namespace com::saxbophone::triangberg {
                             if (not j_vertex->is_eligible()) {
                                 continue;
                             }
-                            // one additional check, make sure at least one vertex belongs only to one triangle
-                            // XXX: not sure if this check is actually in the full version of the algo...
-                            // it's being used here as a shortcut measure for now...
-                            if (i_vertex->connected_triangles_count() == 1 or j_vertex->connected_triangles_count() == 1) {
-                                // XXX: here, we *would* check if the resultant triangle would overlap
-                                // instead, we'll just assume that it doesn't for now...
-                                candidates.push_back(
-                                    std::make_shared<Triangle>(
-                                        // TODO: add proper index
-                                        999, i_vertex, j_vertex
-                                    )
-                                );
+                            // skip when it's the same triangle
+                            if (i_vertex->common_to(*j_vertex)) {
+                                continue;
                             }
+                            // skip vertex-pairs where neither have only one triangle
+                            // if (i_vertex->connected_triangles_count() == 1 or j_vertex->connected_triangles_count() == 1) {
+                                // make the candidate Triangle
+                                std::shared_ptr<Triangle> candidate = std::make_shared<Triangle>(
+                                    this->_triangles.size(), i_vertex, j_vertex
+                                );
+                                // add it if it doesn't intersect any of the others
+                                if (not candidate->intersects_with(this->_triangles)) {
+                                    std::cout << i << " " << j << std::endl;
+                                    // XXX: here, we *would* check if the resultant triangle would overlap
+                                    // instead, we'll just assume that it doesn't for now...
+                                    candidates.push_back(candidate);
+                                }
+                            // }
                         }
                     }
                 }
@@ -316,7 +369,6 @@ namespace com::saxbophone::triangberg {
             this->_builder->add_second_triangle(0, 0.9, 80, 20);
             break;
         case 1:
-            // add third triangle joining two previous triangles
             this->_builder->add_third_triangle();
             break;
         default:

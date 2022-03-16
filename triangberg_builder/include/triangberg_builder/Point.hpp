@@ -24,6 +24,8 @@ namespace com::saxbophone::triangberg {
     struct Point {
         Unit x;
         Unit y;
+        // defaulted equality operator
+        bool operator==(const Point&) const = default;
         // conversion operator to Vector
         operator Vector() const;
         // subtracting another Point from this one yields their delta as a Vector
