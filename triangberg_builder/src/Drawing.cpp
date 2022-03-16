@@ -37,7 +37,9 @@ namespace {
     class Triangle; // forward-declaration
     class Vertex {
     public:
-        Vertex(Point position) : _position(position) {}
+        Vertex(Point position) : Vertex(position, true) {}
+
+        Vertex(Point position, bool eligible) : _position(position), _eligible(eligible) {}
 
         ~Vertex();
         // Vertex needs to know about every Triangle that uses it
@@ -47,9 +49,25 @@ namespace {
             return this->_position;
         }
 
+        bool is_eligible() const {
+            return this->_eligible;
+        }
+
+        std::size_t connected_triangles_count() const {
+            std::size_t count = 0;
+            // every non-null triangle pointer counts
+            for (const auto& t : this->_triangles) {
+                if (!t.expired()) {
+                    count++;
+                }
+            }
+            return count;
+        }
+
     private:
         Point _position;
         std::set<std::weak_ptr<Triangle>, std::owner_less<std::weak_ptr<Triangle>>> _triangles;
+        bool _eligible;
     };
 
     class Triangle : public std::enable_shared_from_this<Triangle> {
@@ -78,7 +96,8 @@ namespace {
         // ctor for first triangle added (with vertex bound to a point on edge of first triangle)
         Triangle(std::size_t id, Point first_point, Vector first_edge) : _id(id) {
             // first vertex is given for us
-            std::shared_ptr<Vertex> first_vertex = std::make_shared<Vertex>(first_point);
+            // NOTE: this Vertex is not eligible for starting any more new Triangles
+            std::shared_ptr<Vertex> first_vertex = std::make_shared<Vertex>(first_point, false);
             this->_vertices.push_back(first_vertex);
             // for the second vertex we just follow the vector of the first edge from the first vertex
             Point second_point = first_point + first_edge;
@@ -211,12 +230,62 @@ namespace com::saxbophone::triangberg {
             this->_triangles.back()->update_references();
         }
 
+        void add_next_triangle() {
+            this->_triangles.push_back(this->get_possible_next_triangles()[0]);
+            this->_triangles.back()->update_references();
+        }
+
         std::vector<Shape> get_shapes() const {
             std::vector<Shape> shapes;
             for (const auto& t : this->_triangles) {
                 shapes.push_back(t->get_shape());
             }
             return shapes;
+        }
+
+        // returns a vector of all possible new Triangles we could place
+        std::vector<std::shared_ptr<Triangle>> get_possible_next_triangles() const {
+            std::vector<std::shared_ptr<Triangle>> candidates;
+            // rules:
+            // - vertices must be from different triangles
+            // - ignore ineligible vertices
+            // - resulting triangle must not intersect any other (not yet implemented)
+            for (std::size_t i = 0; i < this->_triangles.size(); i++) {
+                for (std::size_t j = 0; j < this->_triangles.size(); j++) {
+                    // skip when it's the same triangle
+                    if (i == j) {
+                        continue;
+                    }
+                    for (std::size_t iv = 0; iv < 3; iv++) {
+                        std::shared_ptr<Vertex> i_vertex = this->_triangles[i]->get_vertex(iv);
+                        // skip early if vertex ineligible
+                        if (not i_vertex->is_eligible()) {
+                            continue;
+                        }
+                        for (std::size_t jv = 0; jv < 3; jv++) {
+                            std::shared_ptr<Vertex> j_vertex = this->_triangles[j]->get_vertex(jv);
+                            // skip early if vertex ineligible
+                            if (not j_vertex->is_eligible()) {
+                                continue;
+                            }
+                            // one additional check, make sure at least one vertex belongs only to one triangle
+                            // XXX: not sure if this check is actually in the full version of the algo...
+                            // it's being used here as a shortcut measure for now...
+                            if (i_vertex->connected_triangles_count() == 1 or j_vertex->connected_triangles_count() == 1) {
+                                // XXX: here, we *would* check if the resultant triangle would overlap
+                                // instead, we'll just assume that it doesn't for now...
+                                candidates.push_back(
+                                    std::make_shared<Triangle>(
+                                        // TODO: add proper index
+                                        999, i_vertex, j_vertex
+                                    )
+                                );
+                            }
+                        }
+                    }
+                }
+            }
+            return candidates;
         }
 
     private:
@@ -237,20 +306,21 @@ namespace com::saxbophone::triangberg {
     Drawing::~Drawing() = default;
 
     bool Drawing::is_complete() const {
-        return this->_stage == 6;
+        return false;
     }
 
     void Drawing::add_triangle(std::function<std::size_t(std::size_t)>) {
         switch (this->_stage) {
         case 0:
             // add second triangle at an angle and partway on an edge
-            this->_builder->add_second_triangle(0, 0.9, 80, 120);
+            this->_builder->add_second_triangle(0, 0.9, 80, 20);
             break;
         case 1:
             // add third triangle joining two previous triangles
             this->_builder->add_third_triangle();
             break;
         default:
+            this->_builder->add_next_triangle();
             break;
         }
         if (this->_stage < 6) {
@@ -259,47 +329,8 @@ namespace com::saxbophone::triangberg {
     }
 
     Drawing::Shapes Drawing::get_shapes() const {
-        // NOTE: this dummy implementation is hard-coded to test out rendering code
-        switch (this->_stage) {
-            case 0:
-                return {
-                    {A, B, C,}, this->_builder->get_shapes()
-                };
-            case 1:
-                return {
-                    {A, B, D, E, F, D, C,}, this->_builder->get_shapes()
-                };
-            case 2:
-                return {
-                    {A, B, G, E, F, D, C,}, this->_builder->get_shapes()
-                };
-            case 3:
-                return {
-                    {A, B, G, E, F, H, C,},
-                    {{A, B, C}, {D, E, F}, {B, G, E}, {C, F, H},}
-                };
-            case 4:
-                return {
-                    {A, J, G, E, F, H, C,},
-                    {{A, B, C}, {D, E, F}, {B, G, E}, {C, F, H}, {A, J, G},}
-                };
-            case 5:
-                return {
-                    {A, J, G, E, F, H, K,},
-                    {
-                        {A, B, C}, {D, E, F}, {B, G, E}, {C, F, H}, {A, J, G},
-                        {K, A, H},
-                    }
-                };
-            case 6:
-            default:
-                return {
-                    {M, J, G, E, F, H, K,},
-                    {
-                        {A, B, C}, {D, E, F}, {B, G, E}, {C, F, H}, {A, J, G},
-                        {K, A, H}, {M, J, K},
-                    }
-                };
-        }
+        return {
+            {}, this->_builder->get_shapes()
+        };
     }
 }

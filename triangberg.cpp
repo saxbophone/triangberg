@@ -29,12 +29,14 @@ int main() {
             } else if (event.type == sf::Event::MouseButtonPressed) {
                 if (not drawing.is_complete()) {
                     // dummy lambda --we don't care about it as it's not currently used
-                    drawing.add_triangle([](std::size_t)->std::size_t {return 0;});
+                    // drawing.add_triangle([](std::size_t)->std::size_t {return 0;});
                 } else {
                     window.close();
                 }
             }
         }
+
+        drawing.add_triangle([](std::size_t)->std::size_t {return 0;});
 
         // clear the window with black color
         window.clear(sf::Color::Black);
@@ -58,14 +60,14 @@ int main() {
             window.draw(triangle);
         }
         // draw the background silhouette last, over the top of the triangles
-        sf::VertexArray silhouette(sf::LinesStrip, shapes.silhouette.size() + 1);
-        for (std::size_t i = 0; i < shapes.silhouette.size() + 1; i++) {
-            std::size_t j = i % shapes.silhouette.size();
-            silhouette[i].position = sf::Vector2f(shapes.silhouette[j].x * SCALE, shapes.silhouette[j].y * SCALE);
-            // default draw colour appears to be white anyway...
-            // silhouette[i].color = sf::Color::White;
-        }
-        window.draw(silhouette);
+        // sf::VertexArray silhouette(sf::LinesStrip, shapes.silhouette.size() + 1);
+        // for (std::size_t i = 0; i < shapes.silhouette.size() + 1; i++) {
+        //     std::size_t j = i % shapes.silhouette.size();
+        //     silhouette[i].position = sf::Vector2f(shapes.silhouette[j].x * SCALE, shapes.silhouette[j].y * SCALE);
+        //     // default draw colour appears to be white anyway...
+        //     // silhouette[i].color = sf::Color::White;
+        // }
+        // window.draw(silhouette);
 
         // end the current frame
         window.display();
