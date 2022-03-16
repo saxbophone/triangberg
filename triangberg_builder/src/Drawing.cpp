@@ -265,7 +265,7 @@ namespace com::saxbophone::triangberg {
         bool add_next_triangle() {
             auto next_triangles = this->get_possible_next_triangles();
             if (next_triangles.size() > 0) {
-                this->_triangles.push_back(next_triangles[0]);
+                this->_triangles.push_back(next_triangles.back());
                 this->_triangles.back()->update_references();
                 return true;
             }

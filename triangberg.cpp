@@ -13,8 +13,11 @@ const std::size_t SCALE = 28;
 int main() {
     using namespace com::saxbophone::triangberg;
 
+    sf::ContextSettings settings;
+    settings.antialiasingLevel = 8;
+
     // create the window
-    sf::RenderWindow window(sf::VideoMode(800, 600), "My window");
+    sf::RenderWindow window(sf::VideoMode(800, 600), "Triangberg", sf::Style::Default, settings);
 
     // don't kill my CPU by running at stupid-fast framerate for no reason
     window.setFramerateLimit(60);
@@ -45,7 +48,6 @@ int main() {
         while (not drawing.is_complete() and give_up < 50) {
             // dummy lambda --we don't care about it as it's not currently used
             drawing.add_triangle([](std::size_t)->std::size_t {return 0;});
-            std::cout << "STILL TRYING" << std::endl;
             give_up++;
         }
         std::cout << "p: " << p << " angle: " << angle << std::endl;
