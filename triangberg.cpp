@@ -47,7 +47,7 @@ int main() {
         }
 
         // create the Drawing object
-        Drawing drawing({400, 300}, 50, base_angle, 1, p, angle, {800, 600});
+        Drawing drawing({400, 300}, 20, base_angle, 1, p, angle, {800, 600});
         std::size_t give_up = 0;
         while (not drawing.is_complete() and give_up < 200) {
             // dummy lambda --we don't care about it as it's not currently used

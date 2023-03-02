@@ -402,7 +402,7 @@ namespace com::saxbophone::triangberg {
     void Drawing::add_triangle(std::function<std::size_t(std::size_t)>) {
         if (not this->_started) {
             // add second triangle at an angle and partway on an edge
-            this->_builder->add_second_triangle(40);
+            this->_builder->add_second_triangle(20);
             this->_started = true;
         } else if (this->_can_add_more) {
             this->_can_add_more = this->_builder->add_next_triangle();
